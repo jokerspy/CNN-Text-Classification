@@ -9,24 +9,24 @@ class word2vec:
         # TODO:what is the correct range?
         return np.random.rand(num_words,vec_len)
         
-    def random_init(self,words,vec_len):
+    def random_init(self,num_words,vec_len):
         # generate random w2v
         # TODO:what is the correct range?
-        self.w2v_mat = self.random_word_vector(len(words),vec_len)
+        self.w2v_mat = self.random_word_vector(num_words,vec_len)
         # save the random w2v into rndw2v.bin
-        with open('rndw2v_%d_%d.bin' %(len(words),vec_len), 'wb') as f:
+        with open('rndw2v_%d_%d.bin' %(num_words,vec_len), 'wb') as f:
             pickle.dump(self.w2v_mat, f)
         return self.w2v_mat
     
-    def load_random_w2v(self,words,vec_len):
+    def load_random_w2v(self,num_words,vec_len):
         # load the random w2v from rndw2v.bin
         try:
-            with open('rndw2v_%d_%d.bin' %(len(words),vec_len), 'rb') as f:
+            with open('rndw2v_%d_%d.bin' %(num_words,vec_len), 'rb') as f:
                 self.w2v_mat = pickle.load(f)
-                print('Load w2v file for words=%d, vec_len=%d'%(len(words),vec_len))
+                print('Load w2v file for words=%d, vec_len=%d'%(num_words,vec_len))
         except IOError:
             print('Generate random word2vec')
-            self.w2v_mat = self.random_init(words,vec_len)
+            self.w2v_mat = self.random_init(num_words,vec_len)
         return self.w2v_mat
     
     def load_google_w2v(self,file,words):
@@ -60,6 +60,7 @@ class word2vec:
             #TODO: words that not exist in google w2v
             rnd_vec = self.random_word_vector(len(words),vec_len)
             missing_word_ids = [ids for ids in range(len(words)) if sum(filter(lambda x: x!=0, self.w2v_mat[ids]))==0]
+            print('Words not in pre-trained w2v=%d'%len(missing_word_ids))
             self.w2v_mat[missing_word_ids] = rnd_vec[missing_word_ids]
             with open('google_w2v_%d.bin' %len(words), 'wb') as fp:
                 pickle.dump(self.w2v_mat, fp)
